@@ -60,33 +60,11 @@ class MultiScaleConvFeatureExtractionModel(nn.Module):
         
         self.conv_front = nn.ModuleList()
         
-#         # multi-3: s=12
-#         self.conv_front.append(nn.Sequential(block(1, 90, 24, 12, 0), block(90, 192, 5, 1, 2)))
-#         self.conv_front.append(nn.Sequential(block(1, 90, 12, 6, 0), block(90, 160, 5, 2, 0)))
-#         self.conv_front.append(nn.Sequential(block(1, 90, 8, 4, 0), block(90, 160, 5, 3, 0)))  
-        
-#         # multi-3: s=18
-#         self.conv_front.append(nn.Sequential(block(1, 90, 36, 18, 0), block(90, 192, 5, 1, 2)))
-#         self.conv_front.append(nn.Sequential(block(1, 90, 18, 9, 0), block(90, 160, 5, 2, 0)))
-#         self.conv_front.append(nn.Sequential(block(1, 90, 12, 6, 0), block(90, 160, 5, 3, 0)))  
-        
-#         # multi-3
-#         self.conv_front.append(nn.Sequential(block(1, 90, 48, 24, 0), block(90, 192, 5, 1, 2)))
-#         self.conv_front.append(nn.Sequential(block(1, 90, 16, 8, 0), block(90, 160, 5, 3, 0)))
-#         self.conv_front.append(nn.Sequential(block(1, 90, 8, 4, 0), block(90, 160, 5, 6, 0)))  
-        
-        # multi-3
-        self.conv_front.append(nn.Sequential(block(1, 50, 48, 24, 0), block(50, 192, 5, 1, 2)))
-        self.conv_front.append(nn.Sequential(block(1, 50, 16, 8, 0), block(50, 160, 5, 3, 0)))
-        self.conv_front.append(nn.Sequential(block(1, 50, 8, 4, 0), block(50, 160, 5, 6, 0)))  
-        
-#         # multi-5
-#         self.conv_front.append(nn.Sequential(block(1, 54, 48, 24, 0), block(54, 112, 5, 1, 2)))
-#         self.conv_front.append(nn.Sequential(block(1, 54, 24, 12, 0), block(54, 100, 5, 2, 1))) 
-#         self.conv_front.append(nn.Sequential(block(1, 54, 16, 8, 0), block(54, 100, 5, 3, 0)))
-#         self.conv_front.append(nn.Sequential(block(1, 54, 12, 6, 0), block(54, 100, 5, 4, 0))) 
-#         self.conv_front.append(nn.Sequential(block(1, 54, 8, 4, 0), block(54, 100, 5, 6, 0)))  
-        
+        # multi-3: s=12
+        self.conv_front.append(nn.Sequential(block(1, 90, 24, 12, 0), block(90, 192, 5, 1, 2)))
+        self.conv_front.append(nn.Sequential(block(1, 90, 12, 6, 0), block(90, 160, 5, 2, 0)))
+        self.conv_front.append(nn.Sequential(block(1, 90, 8, 4, 0), block(90, 160, 5, 3, 0)))  
+
         self.skip1 = nn.MaxPool1d(kernel_size=5, stride=8)
         self.skip2 = nn.MaxPool1d(kernel_size=3, stride=4, padding=1)
         
@@ -105,9 +83,7 @@ class MultiScaleConvFeatureExtractionModel(nn.Module):
             ft_shape.append(conv(x).shape[-1])
             
         ft_max = np.min(np.array(ft_shape))
-#         enc = torch.cat((enc[0][:, :, :ft_max], enc[1][:, :, :ft_max], 
-#                          enc[2][:, :, :ft_max], enc[3][:, :, :ft_max],
-#                          enc[4][:, :, :ft_max]), dim=1)
+
         enc = torch.cat((enc[0][:, :, :ft_max], enc[1][:, :, :ft_max], 
                          enc[2][:, :, :ft_max]), dim=1)
         
@@ -172,66 +148,6 @@ class xvecTDNN(nn.Module):
         x = self.fc2(x)
         
         return x
-
-class xvecETDNN(nn.Module):
-    def __init__(self, feature_dim=512, embed_dim=512, norm='bn', p_dropout=0.0):
-        super(xvecETDNN, self).__init__()
-        self.tdnn = nn.Sequential(
-            TDNN_Block(feature_dim, 512, 5, 1, norm=norm),
-            TDNN_Block(512, 512, 1, 1, norm=norm),
-            TDNN_Block(512, 512, 3, 2, norm=norm),
-            TDNN_Block(512, 512, 1, 1, norm=norm),
-            TDNN_Block(512, 512, 3, 3, norm=norm),
-            TDNN_Block(512, 512, 1, 1, norm=norm),
-            TDNN_Block(512, 512, 3, 4, norm=norm),
-            TDNN_Block(512, 512, 1, 1, norm=norm),
-            TDNN_Block(512, 512, 1, 1, norm=norm),
-            TDNN_Block(512, 1500, 1, 1, norm=norm),
-        )
-
-        self.fc1 = nn.Linear(3000, 512)
-        self.bn = nn.BatchNorm1d(512)
-        self.dropout_fc1 = nn.Dropout(p=p_dropout)
-        self.lrelu = nn.LeakyReLU(0.2)
-        self.fc2 = nn.Linear(512, embed_dim)
-
-    def forward(self, x):
-        # Note: x must be (batch_size, feat_dim, chunk_len)
-        x = self.tdnn(x)
-        
-        stats = torch.cat((x.mean(dim=2), x.std(dim=2)), dim=1)
-        
-        x = self.dropout_fc1(self.lrelu(self.bn(self.fc1(stats))))
-        x = self.fc2(x)
-        
-        return x
-    
-class ECAPATDNN(nn.Module):
-    def __init__(self, in_channels=80, channels=512, embd_dim=192):
-        super().__init__()
-        self.layer1 = Conv1dReluBn(in_channels, channels, kernel_size=5, padding=2)
-        self.layer2 = SE_Res2Block(channels, kernel_size=3, stride=1, padding=2, dilation=2, scale=8)
-        self.layer3 = SE_Res2Block(channels, kernel_size=3, stride=1, padding=3, dilation=3, scale=8)
-        self.layer4 = SE_Res2Block(channels, kernel_size=3, stride=1, padding=4, dilation=4, scale=8)
-
-        cat_channels = channels * 3
-        self.conv = nn.Conv1d(cat_channels, cat_channels, kernel_size=1)
-        self.pooling = AttentiveStatsPool(cat_channels, 128)
-        self.bn1 = nn.BatchNorm1d(cat_channels * 2)
-        self.linear = nn.Linear(cat_channels * 2, embd_dim)
-        self.bn2 = nn.BatchNorm1d(embd_dim)
-
-    def forward(self, x):
-        out1 = self.layer1(x)
-        out2 = self.layer2(out1) + out1
-        out3 = self.layer3(out1 + out2) + out1 + out2
-        out4 = self.layer4(out1 + out2 + out3) + out1 + out2 + out3
-
-        out = torch.cat([out2, out3, out4], dim=1)
-        out = F.relu(self.conv(out))
-        out = self.bn1(self.pooling(out))
-        out = self.bn2(self.linear(out))
-        return out
 
 class architecture(nn.Module):
     def __init__(self, embed_dim=512):
