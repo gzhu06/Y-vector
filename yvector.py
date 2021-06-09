@@ -1,11 +1,9 @@
 import torch.nn.functional as F
 from torch import nn
 import torch
-from backbones.tdnn import TDNNLayer
-from backbones.wav2vec import ConvFeatureExtractionModel
+from tdnn import TDNNLayer
+from wav2spk import ConvFeatureExtractionModel
 import numpy as np
-from backbones.ecapa import *
-from backbones.cbam import *
 
 class Fp32GroupNorm(nn.GroupNorm):
     def __init__(self, *args, **kwargs):
