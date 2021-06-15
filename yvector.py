@@ -2,7 +2,7 @@ import torch.nn.functional as F
 from torch import nn
 import torch
 from tdnn import TDNNLayer
-from wav2spk import ConvFeatureExtractionModel
+from wav2vec import ConvFeatureExtractionModel
 import numpy as np
 
 class Fp32GroupNorm(nn.GroupNorm):
@@ -33,6 +33,23 @@ def norm_block(is_layer_norm, dim, affine=True, is_instance_norm=False):
             mod = Fp32GroupNorm(1, dim, affine=affine)  # layer norm
 
     return mod
+    
+class SEBlock(nn.Module):
+    def __init__(self, channels):
+        super().__init__()
+        self.fgate = nn.Sequential(nn.Linear(channels, channels), nn.Sigmoid())
+        self.tgate = nn.Sequential(nn.Linear(channels, 1), nn.Sigmoid())
+
+    def forward(self, x):
+        
+        fg = self.fgate(x.mean(dim=-1))
+        x = x * fg.unsqueeze(-1)
+        
+        tg = x.permute(0, 2, 1).contiguous().view(-1, x.shape[1])
+        tg = self.tgate(tg).view(x.shape[0], x.shape[2]).unsqueeze(1)
+        out = x * tg
+
+        return out
 
 class MultiScaleConvFeatureExtractionModel(nn.Module):
     def __init__(
@@ -47,28 +64,28 @@ class MultiScaleConvFeatureExtractionModel(nn.Module):
                 nn.Conv1d(n_in, n_out, k, stride=stride, bias=False, padding=padding),
                 nn.Dropout(p=dropout),
                 norm_block(is_layer_norm=False, dim=n_out, affine=not non_affine_group_norm,
-                           is_instance_norm=True), activation)
-        
-        def filterblock(n_in, n_out, k, stride, padding=0):
-            return nn.Sequential(
-                nn.Conv1d(n_in, n_out, k, stride=stride, bias=False, padding=padding),
-                nn.Dropout(p=dropout),
-                norm_block(is_layer_norm=False, dim=n_out, affine=not non_affine_group_norm,
-                           is_instance_norm=True))
+                           is_instance_norm=True), 
+                activation)
         
         self.conv_front = nn.ModuleList()
         
-        # multi-3: s=12
-        self.conv_front.append(nn.Sequential(block(1, 90, 24, 12, 0), block(90, 192, 5, 1, 2)))
-        self.conv_front.append(nn.Sequential(block(1, 90, 12, 6, 0), block(90, 160, 5, 2, 0)))
-        self.conv_front.append(nn.Sequential(block(1, 90, 8, 4, 0), block(90, 160, 5, 3, 0)))  
-
+        # multi-3: s=18
+        self.conv_front.append(nn.Sequential(block(1, 90, 36, 18, 0), block(90, 192, 5, 1, 2)))
+        self.conv_front.append(nn.Sequential(block(1, 90, 18, 9, 0), block(90, 160, 5, 2, 0)))
+        self.conv_front.append(nn.Sequential(block(1, 90, 12, 6, 0), block(90, 160, 5, 3, 0)))  
+        
         self.skip1 = nn.MaxPool1d(kernel_size=5, stride=8)
         self.skip2 = nn.MaxPool1d(kernel_size=3, stride=4, padding=1)
+#         self.skip3 = nn.MaxPool1d(kernel_size=3, stride=2, padding=1)
         
         self.conv1 = block(512, 512, 5, 2)
         self.conv2 = block(512, 512, 3, 2)
         self.conv3 = block(512, 512, 3, 2, padding=2)
+        
+        self.am1 = SEBlock(512)
+        self.am2 = SEBlock(512)
+        self.am3 = SEBlock(512)
+        self.am4 = SEBlock(512*3)
 
     def forward(self, x):
         # BxT -> BxCxT
@@ -81,21 +98,23 @@ class MultiScaleConvFeatureExtractionModel(nn.Module):
             ft_shape.append(conv(x).shape[-1])
             
         ft_max = np.min(np.array(ft_shape))
-
-        enc = torch.cat((enc[0][:, :, :ft_max], enc[1][:, :, :ft_max], 
-                         enc[2][:, :, :ft_max]), dim=1)
+        enc = torch.cat((enc[0][:, :, :ft_max], enc[1][:, :, :ft_max], enc[2][:, :, :ft_max]), dim=1)
         
         # skipping layers
         skip1_out = self.skip1(enc)
         out = self.conv1(enc)
+        out = self.am1(out)
         skip2_out = self.skip2(out)
         out = self.conv2(out)
+        out = self.am2(out)
 #         skip3_out = self.skip3(out)
         out = self.conv3(out)
+        out = self.am3(out)
         
         t_max = np.min(np.array([skip1_out.shape[-1], skip2_out.shape[-1], out.shape[-1]]))
         
         out = torch.cat((skip1_out[:, :, :t_max], skip2_out[:, :, :t_max], out[:, :, :t_max]), dim=1)
+        out = self.am4(out)
 
         return out
     
