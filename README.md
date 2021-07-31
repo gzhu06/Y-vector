@@ -8,7 +8,7 @@ Official inference code for Y-vector (https://arxiv.org/abs/2010.12951) and unof
 
 In our experiment, we train on VoxCeleb2 Dev dataset, and test on VoxCeleb1 dataset. 
 
-Provided pretrained model results (EER, minDCF(0.01)): 
+Provided pretrained model [link](https://drive.google.com/file/d/1aTfbJ8vBiuMYKZeEuGPF3hsYGJ_rYwoE/view?usp=sharing) results (EER, minDCF(0.01)): 
 
 | Metric        |VoxCeleb1-O  | VoxCeleb1-E  |VoxCeleb1-H | 
 |------------------|------------------|------------------|------------------|
@@ -39,10 +39,11 @@ Then run inference.py to compute embeddings and test EER and minDCF.
 
 Cosine similarity score results on VoxCeleb-1 Test dataset (EER):
 
-| System         |VoxCeleb1-O*  | VoxCeleb1-E  |VoxCeleb1-H | 
+| System         |VoxCeleb1-O[^1]  | VoxCeleb1-E  |VoxCeleb1-H | 
 |------------------|------------------|------------------|------------------|
 | wav2spk       | 3.00             | 2.78              | 4.56             |
 | Y-vector.       | 2.72              |   2.38            | 3.87             |
 
-(*Notice that VoxCeleb1-O can fluctuate a lot in our experimental setting)
+([^1]Notice that VoxCeleb1-O can fluctuate a lot in our experimental setting)
+
 It's possible to boost the performance by replacing each part with stronger networks. For example, replace backbone with F-TDNN, E-TDNN or ECAPA-TDNN.
