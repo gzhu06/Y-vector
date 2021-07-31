@@ -2,37 +2,8 @@ import torch.nn.functional as F
 from torch import nn
 import torch
 from tdnn import TDNNLayer
-from wav2vec import ConvFeatureExtractionModel
+from wav2spk import ConvFeatureExtractionModel, Fp32GroupNorm, norm_block
 import numpy as np
-
-class Fp32GroupNorm(nn.GroupNorm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def forward(self, inputs):
-        output = F.group_norm(
-            inputs.float(),
-            self.num_groups,
-            self.weight.float() if self.weight is not None else None,
-            self.bias.float() if self.bias is not None else None,
-            self.eps,
-        )
-        return output.type_as(inputs)
-    
-def norm_block(is_layer_norm, dim, affine=True, is_instance_norm=False):
-    if is_layer_norm:
-        mod = nn.Sequential(
-            TransposeLast(),
-            Fp32LayerNorm(dim, elementwise_affine=affine),
-            TransposeLast(),
-        )
-    else:
-        if is_instance_norm:
-            mod = Fp32GroupNorm(dim, dim, affine=False) # instance norm
-        else:
-            mod = Fp32GroupNorm(1, dim, affine=affine)  # layer norm
-
-    return mod
     
 class SEBlock(nn.Module):
     def __init__(self, channels):

@@ -7,8 +7,11 @@ import json
 import random
 import pickle
 
-def clipped_feature(x, seg_len=config.seg_len):
-    frame_length = int(seg_len*config.sr)
+SR = 16000
+SEG_LEN = 3.9
+
+def clipped_feature(x, seg_len=SEG_LEN):
+    frame_length = int(seg_len * SR)
     if x.shape[-1] > frame_length:
         bias = np.random.randint(0, x.shape[1] - frame_length)
         clipped_x = x[:, bias: frame_length + bias]
