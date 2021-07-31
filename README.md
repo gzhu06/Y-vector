@@ -2,13 +2,14 @@
 
 ## Y-vector: Multiscale Waveform Encoder for Speaker Embedding (Incomplete)
 
+## Introduction
 In this paper, we use the modular architecture on raw waveform speaker embedding, to be specific: a waveform encoder and deep embedding backbone. 
 
 Official inference code for Y-vector (https://arxiv.org/abs/2010.12951) and unofficial code for wav2spk (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1287.pdf)
 
 In our experiment, we train on VoxCeleb2 Dev dataset, and test on VoxCeleb1 dataset. 
 
-Provided pretrained model [link](https://drive.google.com/file/d/1aTfbJ8vBiuMYKZeEuGPF3hsYGJ_rYwoE/view?usp=sharing) results (EER, minDCF(0.01)): 
+Provided pretrained model ([link](https://drive.google.com/file/d/1aTfbJ8vBiuMYKZeEuGPF3hsYGJ_rYwoE/view?usp=sharing)) results (EER, minDCF(0.01)): 
 
 | Metric        |VoxCeleb1-O  | VoxCeleb1-E  |VoxCeleb1-H | 
 |------------------|------------------|------------------|------------------|
@@ -47,3 +48,6 @@ Cosine similarity score results on VoxCeleb-1 Test dataset (EER):
 ([^1]Notice that VoxCeleb1-O can fluctuate a lot in our experimental setting)
 
 It's possible to boost the performance by replacing each part with stronger networks. For example, replace backbone with F-TDNN, E-TDNN or ECAPA-TDNN.
+
+![DET](./pretrained/DET_Curve.png)
+
