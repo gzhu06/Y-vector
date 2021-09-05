@@ -1,6 +1,6 @@
 # Y-vector
 
-## Y-vector: Multiscale Waveform Encoder for Speaker Embedding (Incomplete)
+## Y-vector: Multiscale Waveform Encoder for Speaker Embedding
 
 ## Introduction
 In this paper, we use the modular architecture on raw waveform speaker embedding, to be specific: a waveform encoder and deep embedding backbone. 
