@@ -1,6 +1,6 @@
 # Y-vector
 
-## Y-vector: Multiscale Waveform Encoder for Speaker Embedding (Incomplete)
+## Y-vector: Multiscale Waveform Encoder for Speaker Embedding
 
 ## Introduction
 In this paper, we use the modular architecture on raw waveform speaker embedding, to be specific: a waveform encoder and deep embedding backbone. 
@@ -40,12 +40,12 @@ Then run inference.py to compute embeddings and test EER and minDCF.
 
 Cosine similarity score results on VoxCeleb-1 Test dataset (EER):
 
-| System         |VoxCeleb1-O[^1]  | VoxCeleb1-E  |VoxCeleb1-H | 
+| System         |VoxCeleb1-O | VoxCeleb1-E  |VoxCeleb1-H | 
 |------------------|------------------|------------------|------------------|
 | wav2spk       | 3.00             | 2.78              | 4.56             |
 | Y-vector.       | 2.72              |   2.38            | 3.87             |
 
-([^1]Notice that VoxCeleb1-O can fluctuate a lot in our experimental setting)
+(Notice that VoxCeleb1-O can fluctuate a lot in our experimental setting)
 
 It's possible to boost the performance by replacing each part with stronger networks. For example, replace backbone with F-TDNN, E-TDNN or ECAPA-TDNN.
 
