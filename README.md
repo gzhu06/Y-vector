@@ -9,7 +9,7 @@ Official inference code for Y-vector (https://arxiv.org/abs/2010.12951) and unof
 
 In our experiment, we train on VoxCeleb2 Dev dataset, and test on VoxCeleb1 dataset. 
 
-Provided pretrained model ([link](https://drive.google.com/file/d/1aTfbJ8vBiuMYKZeEuGPF3hsYGJ_rYwoE/view?usp=sharing)) results (EER, minDCF(0.01)): 
+Provided pretrained model ([link](https://drive.google.com/file/d/1JEwgkz3u5INZYkqS8-WWL1WNnKLQA8Eo/view?usp=sharing)) results (EER, minDCF(0.01)): 
 
 | Metric        |VoxCeleb1-O  | VoxCeleb1-E  |VoxCeleb1-H | 
 |------------------|------------------|------------------|------------------|
