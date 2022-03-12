@@ -26,14 +26,11 @@ pandas
 
 ## Usage
 
-This code is only for demonstration purpose, although many variables are hard-coded, the results can be ensured and reproduced.
+inference.py is for reproducing results on the table, speaker embedding extraction is simply load wav and run forward model with pretrained models.
 
+Guidance on reproducing the results: after installing required packages, download VoxCeleb1 data first then use extract_wav.py to save input feature into pickle files. Saved pkl files format: ``spkid-recid-fileid.pkl`` Then run inference.py to compute embeddings and test EER and minDCF. 
 
-After installed required packages, download VoxCeleb1 data first then use extract_wav.py to save input feature into pickle files. To inference embeddings for other datasets (minimum length of input utterance should be longer than 4 seconds) , pay attention to the saved pkl files before running extract_wav.py (pkl filename format: "spkid-recid-fileid.pkl", recording id is optional). Remember to replace the hard-coded file path in extract_wav.py and inference.py
-
-
-Then run inference.py to compute embeddings and test EER and minDCF.
-
+To inference embeddings for other datasets, the minimum length of input utterance should be longer than 4 seconds. 
 
 
 ## Results 
