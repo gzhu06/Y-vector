@@ -1,0 +1,46 @@
+OXFORD VGG VoxCeleb Dataset 
+
+VoxCeleb1 contains over 100,000 utterances for 1,251 celebrities, extracted from videos uploaded to YouTube.  
+VoxCeleb2 contains over a million utterances for 6,112 celebrities, extracted from videos uploaded to YouTube. 
+
+The speakers span a wide range of different ethnicities, accents, professions and ages. 
+
+We provide Youtube URLs, associated face detections, and timestamps, as
+well as cropped audio segments and cropped face videos from the
+dataset.  The copyright of both the original and cropped versions
+of the videos remains with the original owners.
+
+The data is covered under a Creative Commons
+Attribution 4.0 International license (Please read the
+license terms here. https://creativecommons.org/licenses/by/4.0/).
+
+Downloading this dataset implies agreement to follow the same
+conditions for any modification and/or
+re-distribution of the dataset in any form.
+
+
+Additionally any entity using this dataset agrees to the following conditions:
+
+THIS DATASET IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Please cite [1,2] below if you make use of the dataset.
+
+[1] J. S. Chung, A. Nagrani, A. Zisserman  
+VoxCeleb2: Deep Speaker Recognition  
+INTERSPEECH, 2018.
+
+[2] A. Nagrani, J. S. Chung, A. Zisserman
+VoxCeleb: a large-scale speaker identification dataset  
+INTERSPEECH, 2017
+
